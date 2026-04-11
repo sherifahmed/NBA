@@ -30,7 +30,6 @@ yarn-error.log*
 .amplify
 amplify_outputs*
 amplifyconfiguration*
-amplify/auth/resource.ts
-amplify/data/resource.ts
+
 # Note: Keeping schema usually good but Amplify Gen 2 has specific secrets/outputs. 
 # However, for a generic repo, usually we keep the definition files but ignore the outputs.
