@@ -1,0 +1,36 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Production
+dist
+
+# Misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+
+# Amplify
+.amplify
+amplify_outputs*
+amplifyconfiguration*
+amplify/auth/resource.ts
+amplify/data/resource.ts
+# Note: Keeping schema usually good but Amplify Gen 2 has specific secrets/outputs. 
+# However, for a generic repo, usually we keep the definition files but ignore the outputs.

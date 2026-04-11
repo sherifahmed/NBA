@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@config "../tailwind.config.mjs";
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-100 antialiased min-h-screen transition-colors duration-500 selection:bg-cyan-500/30;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer utilities {
+  .premium-glass {
+    @apply bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] rounded-3xl transition-all duration-300;
+  }
+  
+  .premium-glass-hover {
+    @apply hover:bg-slate-800/60 hover:border-white/10 hover:shadow-cyan-500/10 hover:-translate-y-0.5;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-br from-white via-white to-slate-500 bg-clip-text text-transparent;
+  }
+
+  .accent-gradient {
+    @apply bg-gradient-to-br from-cyan-400 to-blue-600;
+  }
+
+  .status-badge {
+    @apply px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-800 rounded-full hover:bg-slate-700 transition-colors;
+}
