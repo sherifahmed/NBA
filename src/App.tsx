@@ -6,12 +6,18 @@ import {
   LayoutDashboard, 
   Moon, 
   Sun, 
-  Settings
+  Settings,
+  Building,
+  LogOut,
+  Key,
+  UserCircle
 } from 'lucide-react';
 import Dashboard from './pages/Dashboard';
 import BookingRecords from './pages/BookingRecords';
 import BookingDetails from './pages/BookingDetails';
 import ClientDatabase from './pages/ClientDatabase';
+import ClientDetails from './pages/ClientDetails';
+import BusinessSettings from './pages/BusinessSettings';
 
 const ThemeContext = createContext({
   isDark: true,
@@ -19,6 +25,42 @@ const ThemeContext = createContext({
 });
 
 export const useTheme = () => useContext(ThemeContext);
+
+const UserDropdown = ({ isMobile = false }: { isMobile?: boolean }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-center hover:bg-slate-800 transition-colors group"
+      >
+        <UserCircle className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
+      </button>
+      
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className={`absolute z-50 w-48 bg-slate-900 border border-white/10 rounded-2xl shadow-xl overflow-hidden text-sm ${isMobile ? 'right-0 top-full mt-2' : 'left-full bottom-0 ml-4'}`}>
+            <Link to="/settings" onClick={() => setIsOpen(false)} className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-cyan-400 transition-colors font-bold">
+              <Building className="w-4 h-4" /> My Business
+            </Link>
+            <div className="h-px bg-white/5 w-full" />
+            <button onClick={() => { setIsOpen(false); alert('Login Flow Stub'); }} className="w-full flex items-center gap-2 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors text-left font-semibold">
+              <UserCircle className="w-4 h-4" /> Sign In
+            </button>
+            <button onClick={() => { setIsOpen(false); alert('Forgot Password Flow Stub'); }} className="w-full flex items-center gap-2 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors text-left font-semibold border-b border-white/5">
+              <Key className="w-4 h-4" /> Reset Password
+            </button>
+            <button onClick={() => { setIsOpen(false); alert('Logout Flow Stub'); }} className="w-full flex items-center gap-2 px-4 py-3 text-red-500 bg-red-500/5 hover:bg-red-500/10 hover:text-red-400 transition-colors text-left font-semibold">
+              <LogOut className="w-4 h-4 shrink-0" /> Sign Out
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 const AppSidebar = ({ isDark, toggleTheme, location }: any) => {
   const navLinks = [
@@ -61,13 +103,14 @@ const AppSidebar = ({ isDark, toggleTheme, location }: any) => {
           })}
         </nav>
       </div>
-      <div className="p-6">
+      <div className="p-6 flex items-center gap-3">
+        <UserDropdown />
         <button
           onClick={toggleTheme}
-          className="flex items-center gap-3 px-4 py-3.5 w-full rounded-2xl transition-all duration-300 font-bold text-sm text-slate-500 hover:text-slate-200 hover:bg-slate-900 border border-transparent hover:border-white/5"
+          className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl transition-all duration-300 font-bold text-sm text-slate-500 hover:text-slate-200 bg-slate-900 border border-transparent hover:border-white/5"
         >
-          {isDark ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-blue-500" />}
-          {isDark ? 'Light' : 'Dark'} Mode
+          {isDark ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-blue-500" />}
+          {isDark ? 'Light' : 'Dark'}
         </button>
       </div>
     </aside>
@@ -109,9 +152,12 @@ const Layout = () => {
             <img src="/NBA-Icon.png" alt="NBA Logo" className="w-6 h-6 rounded-sm" />
             NBA
           </h1>
-          <button onClick={toggleTheme} className="w-9 h-9 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-center">
-             {isDark ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-blue-500" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={toggleTheme} className="w-10 h-10 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-center">
+               {isDark ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-blue-500" />}
+            </button>
+            <UserDropdown isMobile />
+          </div>
         </header>
 
         <div className="flex-1 p-3 md:p-12 overflow-x-hidden pb-20 md:pb-12">
@@ -148,7 +194,8 @@ function App() {
             <Route path="bookings" element={<BookingRecords />} />
             <Route path="bookings/:id" element={<BookingDetails />} />
             <Route path="clients" element={<ClientDatabase />} />
-            <Route path="settings" element={<div className="p-10 font-bold">Documentation coming soon...</div>} />
+            <Route path="clients/:id" element={<ClientDetails />} />
+            <Route path="settings" element={<BusinessSettings />} />
           </Route>
         </Routes>
       </BrowserRouter>

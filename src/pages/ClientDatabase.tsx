@@ -1,85 +1,150 @@
-import { Search, Plus, MessageSquare, MoreHorizontal, UserPlus, Phone, Dog } from 'lucide-react';
+import { Search, Plus, Phone, MessageSquare, MoreVertical, SortAsc, Filter, Archive } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ClientDatabase = () => {
+  const navigate = useNavigate();
+
+  const mockClients = [
+    {
+      id: "348",
+      petName: "Happy",
+      parentName: "Divya",
+      breed: "Labrador retriever",
+      age: "3Y 0M",
+      gender: "Female",
+      species: "Dog",
+      image: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=100&q=80",
+    },
+    {
+      id: "347",
+      petName: "coco",
+      parentName: "Sunaina",
+      breed: "Shih tzu",
+      age: "2Y 5M",
+      gender: "Male",
+      species: "Dog",
+      image: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=100&q=80",
+    },
+    {
+      id: "346",
+      petName: "Buddy",
+      parentName: "Simran",
+      breed: "Beagle",
+      age: "2Y 6M",
+      gender: "Male",
+      species: "Dog",
+      image: "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=100&q=80",
+    }
+  ];
+
   return (
     <div className="pb-12 md:pb-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-700 font-sans">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 mb-8 md:mb-10 px-1">
         <div>
-          <h1 className="text-2xl md:text-4xl font-black text-white tracking-tight mb-1 md:mb-2">Client <span className="text-cyan-400 text-gradient">Directory</span></h1>
-          <p className="text-[10px] md:text-xs font-bold text-slate-500 tracking-wide uppercase">Partners & Pet Parents</p>
-        </div>
-        <div className="flex flex-wrap gap-2 md:gap-3 mt-2 md:mt-0">
-          <button className="flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 premium-glass rounded-xl text-xs md:text-sm font-bold text-slate-300 hover:text-white transition-colors">
-            <UserPlus className="w-4 h-4 md:w-5 md:h-5" /> Add Manually
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 bg-cyan-500 hover:bg-cyan-400 transition-all rounded-xl text-slate-950 font-bold text-xs md:text-sm shadow-xl shadow-cyan-500/20 active:scale-95">
-            <MessageSquare className="w-4 h-4 md:w-5 md:h-5" /> Send Onboarding
-          </button>
+          <h1 className="text-2xl md:text-4xl font-black text-white tracking-tight mb-1 md:mb-2">Client <span className="text-cyan-400 text-gradient">Database</span></h1>
+          <p className="text-[10px] md:text-xs font-bold text-slate-500 tracking-wide uppercase">Operational Management</p>
         </div>
       </header>
 
-      {/* Toolbar */}
-      <div className="flex flex-col md:flex-row items-center gap-4 mb-10">
-        <div className="relative flex-1 group w-full">
-          <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-          <input 
-            type="text" 
-            placeholder="Search by name, email or dog name..." 
-            className="w-full bg-slate-900/50 border border-white/5 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:bg-slate-900 transition-all"
-          />
+      {/* Main Command Bar */}
+      <div className="flex flex-col gap-6 mb-10">
+        <div className="flex items-center gap-3 w-full">
+           <div className="relative flex-1 group">
+             <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
+             <input 
+               type="text" 
+               placeholder="Search by name, pet, phone number or email..." 
+               className="w-full bg-slate-900/50 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:bg-slate-900 transition-all shadow-xl"
+             />
+           </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 md:gap-3">
+           <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900/50 text-slate-300 border border-white/5 hover:bg-slate-800 hover:text-white transition-all text-xs font-bold active:scale-95">
+             <SortAsc className="w-4 h-4" /> Sort
+           </button>
+           <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900/50 text-slate-300 border border-white/5 hover:bg-slate-800 hover:text-white transition-all text-xs font-bold active:scale-95">
+             <Filter className="w-4 h-4" /> Filter
+           </button>
+           <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900/50 text-slate-300 border border-white/5 hover:bg-slate-800 hover:text-white transition-all text-xs font-bold active:scale-95">
+             <MoreVertical className="w-4 h-4" /> Actions
+           </button>
+           
+           <div className="flex-1" />
+
+           <div className="flex items-center justify-center -translate-x-12 md:static md:translate-x-0">
+             <button className="h-14 w-14 flex items-center justify-center rounded-2xl bg-cyan-500 text-slate-950 shadow-xl shadow-cyan-500/20 hover:bg-cyan-400 transition-all active:scale-90 ring-4 ring-slate-950">
+               <Plus className="w-6 h-6" />
+             </button>
+           </div>
         </div>
       </div>
 
-      {/* Client List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[
-          { name: 'Sherif Mohamed', pet: 'Bruno (Beagle)', phone: '+91 98765 43210', status: 'Onboarded' },
-          { name: 'Anjali Verma', pet: 'Milo (Husky)', phone: '+91 91234 56789', status: 'Pending' },
-          { name: 'Rahul Sharma', pet: 'Buddy (Golden)', phone: '+91 88888 77777', status: 'Onboarded' },
-        ].map((client, i) => (
-          <div key={i} className="premium-glass p-6 group cursor-pointer border border-white/5">
-            <div className="flex justify-between items-start mb-6">
-              <div className="w-12 h-12 rounded-2xl accent-gradient flex items-center justify-center text-xl font-black text-white shadow-lg shadow-cyan-500/10">
-                {client.name[0]}
+      {/* Summary Info */}
+      <div className="flex items-center justify-between mb-8 px-1">
+        <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">
+          <Archive className="w-3.5 h-3.5" /> Archived 1
+        </div>
+        <div className="text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-[0.2em]">
+           Showing <span className="text-white">347 of 347</span>
+        </div>
+      </div>
+
+      {/* Grid of Client Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {mockClients.map((client) => (
+          <div 
+            key={client.id}
+            onClick={() => navigate(`/clients/${client.id}`)}
+            className="premium-glass p-5 md:p-6 premium-glass-hover group cursor-pointer border border-white/5 flex flex-col gap-6"
+          >
+            <div className="flex items-center gap-4">
+              <img 
+                src={client.image} 
+                alt={client.petName} 
+                className="w-16 h-16 rounded-full object-cover ring-2 ring-white/5 ring-offset-4 ring-offset-slate-950" 
+              />
+              <div>
+                <h3 className="text-lg md:text-xl font-black text-white group-hover:text-cyan-400 transition-colors uppercase tracking-tight leading-tight">
+                  {client.petName} <span className="text-slate-500">&</span> {client.parentName}
+                </h3>
+                <div className="flex flex-wrap gap-x-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+                  <span>{client.breed}</span>
+                  <span>•</span>
+                  <span>{client.age}</span>
+                  <span>•</span>
+                  <span>{client.gender}</span>
+                  <span>•</span>
+                  <span>{client.species}</span>
+                </div>
+                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mt-1">
+                  Pet ID: {client.id}
+                </p>
               </div>
-              <button className="p-2 text-slate-600 hover:text-white transition-colors">
-                <MoreHorizontal className="w-5 h-5" />
+            </div>
+
+            <div className="flex items-center gap-2 pt-2 border-t border-white/5">
+              <button 
+                onClick={(e) => { e.stopPropagation(); window.location.href = 'tel:+918826167441'; }}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-900 border border-white/5 text-slate-300 hover:text-white transition-all text-xs font-bold"
+              >
+                <Phone className="w-3.5 h-3.5" /> Call
               </button>
-            </div>
-
-            <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors mb-1">{client.name}</h3>
-            <p className={`text-[10px] font-black uppercase tracking-widest mb-6 ${client.status === 'Onboarded' ? 'text-emerald-400' : 'text-amber-400'}`}>
-               {client.status}
-            </p>
-
-            <div className="space-y-3 mb-8">
-              <div className="flex items-center gap-3 text-xs font-medium text-slate-400">
-                <Phone className="w-3.5 h-3.5 text-slate-600" /> {client.phone}
-              </div>
-              <div className="flex items-center gap-3 text-xs font-medium text-slate-400">
-                <Dog className="w-3.5 h-3.5 text-slate-600" /> {client.pet}
-              </div>
-            </div>
-
-            <div className="flex gap-2 border-t border-white/5 pt-6">
-               <button className="flex-1 h-10 rounded-xl bg-slate-950/50 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                  Profile
-               </button>
-               <button className="flex-1 h-10 rounded-xl bg-slate-950/50 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                  Bookings
-               </button>
+              <button 
+                onClick={(e) => { e.stopPropagation(); window.location.href = 'https://wa.me/918826167441'; }}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white transition-all text-xs font-bold"
+              >
+                <MessageSquare className="w-3.5 h-3.5" /> Whatsapp
+              </button>
+              <button 
+                onClick={(e) => { e.stopPropagation(); }}
+                className="flex items-center justify-center w-11 py-2.5 rounded-xl bg-slate-900 border border-white/5 text-slate-300 hover:text-white transition-all text-xs font-bold"
+              >
+                <MoreVertical className="w-4 h-4" />
+              </button>
             </div>
           </div>
         ))}
-
-        {/* Add button placeholder */}
-        <div className="premium-glass p-6 border-dashed border-2 border-white/10 hover:border-cyan-500/30 flex flex-col items-center justify-center text-center group transition-all cursor-pointer bg-transparent">
-           <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-             <Plus className="w-6 h-6 text-slate-500 group-hover:text-cyan-400" />
-           </div>
-           <p className="text-sm font-bold text-slate-400 group-hover:text-slate-200">Register Client</p>
-           <p className="text-[10px] text-slate-600 mt-1 font-medium">New manual entry</p>
-        </div>
       </div>
     </div>
   );
