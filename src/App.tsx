@@ -12,7 +12,8 @@ import {
   Key,
   UserCircle,
   ShieldCheck,
-  Fingerprint
+  Fingerprint,
+  MessageSquare
 } from 'lucide-react';
 import Dashboard from './pages/Dashboard';
 import BookingRecords from './pages/BookingRecords';
@@ -23,6 +24,8 @@ import BusinessSettings from './pages/BusinessSettings';
 import SuperAdminInvites from './pages/SuperAdminInvites';
 import SecurityCenter from './pages/SecurityCenter';
 import CompanyOnboarding from './pages/CompanyOnboarding';
+import AddEnquiry from './pages/AddEnquiry';
+import ConsumerOnboarding from './pages/ConsumerOnboarding';
 
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
@@ -71,6 +74,7 @@ const AppSidebar = ({ isDark, toggleTheme, location }: any) => {
   const navLinks = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Booking Records', path: '/bookings', icon: CalendarDays },
+    { name: 'Enquiries', path: '/enquiries/new', icon: MessageSquare },
     { name: 'Client Database', path: '/clients', icon: Users },
   ];
 
@@ -204,10 +208,11 @@ const App = () => {
       <Authenticator.Provider>
         <BrowserRouter>
           <Routes>
-            {/* Public Company Onboarding Flow */}
+            {/* Public Entry Points */}
             <Route path="/onboard/:code?" element={<CompanyOnboarding />} />
+            <Route path="/lead/new/:token?" element={<ConsumerOnboarding />} />
             
-            {/* Protected Application Routes */}
+            {/* Protected Business Operating System */}
             <Route path="/" element={
               <Authenticator hideSignUp>
                 <Layout />
@@ -216,6 +221,7 @@ const App = () => {
               <Route index element={<Dashboard />} />
               <Route path="bookings" element={<BookingRecords />} />
               <Route path="bookings/:id" element={<BookingDetails />} />
+              <Route path="enquiries/new" element={<AddEnquiry />} />
               <Route path="clients" element={<ClientDatabase />} />
               <Route path="clients/:id" element={<ClientDetails />} />
               <Route path="super-admin" element={<SuperAdminInvites />} />
