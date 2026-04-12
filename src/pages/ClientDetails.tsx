@@ -3,7 +3,7 @@ import {
   ArrowLeft, Phone, MessageSquare, Plus, Edit2, 
   MoreVertical, Calendar, Download,
   ShieldCheck, FileText, 
-  Info, 
+  History, Info, 
   XCircle
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -301,7 +301,80 @@ const ClientDetails = () => {
           </div>
         )}
 
-        {(activeTab === 'Notes' || activeTab === 'Audit Trail') && (
+        {activeTab === 'Audit Trail' && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 px-1 mb-2">
+               <History className="w-5 h-5 text-cyan-400" />
+               <h3 className="text-lg font-black text-white italic uppercase tracking-tight">Activity Timeline</h3>
+            </div>
+            
+            <div className="flex items-center justify-between mb-4 px-1">
+               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Showing 1 of 1</span>
+            </div>
+
+            <div className="relative pl-8 space-y-8 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-800">
+               <div className="relative">
+                  <div className="absolute -left-[26px] top-1.5 w-4 h-4 rounded-full bg-slate-950 ring-4 ring-slate-800" />
+                  <div className="inline-block px-3 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-widest mb-4 border border-indigo-500/20">
+                    5:04 PM, 11 Apr'26
+                  </div>
+                  
+                  <div className="premium-glass p-6 border border-white/5">
+                    <p className="text-sm font-bold text-slate-300 mb-4">Created client with 40 fields:</p>
+                    <div className="grid grid-cols-1 gap-1 pl-4 border-l border-white/5">
+                      {[
+                        { label: 'Pet Name', value: 'Happy' },
+                        { label: 'Breed', value: 'Labrador Retriever' },
+                        { label: 'Pet Gender', value: 'Female' },
+                        { label: 'Breed Size', value: 'Medium' },
+                        { label: 'Pet Type', value: 'Dog' },
+                        { label: 'Pet Birthday', value: 'Apr 11, 2023' },
+                        { label: 'Pet Behaviour', value: 'Playful, Resource guarding' },
+                        { label: 'Dietary Preference', value: 'Non-vegetarian' },
+                        { label: 'Preferences/Allergies', value: 'Na' },
+                        { label: 'Neutered/Spayed Status', value: 'No' },
+                        { label: 'Last Heat Month', value: 'Mar' },
+                        { label: 'Last Heat Year', value: '2026' },
+                        { label: 'Vaccination Status', value: 'Vaccinated' },
+                        { label: 'Vaccinations', value: 'Anti Rabies, DHPPiL (9-in-1), Corona, Kennel Cough' },
+                        { label: 'Tick Prevention', value: 'Yes' },
+                        { label: 'Tick Prevention Date', value: 'Mar 28, 2026' },
+                        { label: 'Tick Prevention Method', value: 'Anti-Tick Spray /Shampoo' },
+                        { label: 'Ongoing Medication', value: 'YES' },
+                        { label: 'Medication Detail', value: 'Powder for anal gland infection' },
+                        { label: 'Major Illness History', value: 'Na' },
+                        { label: 'Veterinarian Name', value: 'Zigly pitampura' },
+                        { label: 'Veterinarian Contact', value: '+91 88261 67441' },
+                        { label: 'Local Guardian Name', value: 'Divya sharma' },
+                        { label: 'Local Guardian Contact', value: '+91 88261 67441' },
+                        { label: 'Deworming Date', value: 'Feb 15, 2026' },
+                        { label: 'Status', value: 'Active' },
+                        { label: 'Home Company', value: "Suhana's Home Boarding" },
+                        { label: 'Name', value: 'Divya' },
+                        { label: 'Phone Number', value: '+91 88261 67441' },
+                        { label: 'Address', value: 'A10 Subhavna niketan, Pitampura' },
+                        { label: 'Address 2', value: 'Near pitampura metro station' },
+                        { label: 'Country', value: 'IND' },
+                        { label: 'T&C Accepted', value: 'No' },
+                        { label: 'App User', value: 'No' },
+                      ].map((field, i) => (
+                        <div key={i} className="text-[11px] font-medium text-slate-400 flex gap-2">
+                           <span className="text-slate-600">•</span>
+                           <span className="font-bold text-slate-300">{field.label}:</span>
+                           <span className="text-slate-400">"{field.value}"</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-6 pt-4 border-t border-white/5">
+                       <p className="text-[10px] font-bold text-slate-500 italic">By Suhana Ahmed (suhana.ahmed3@gmail.com)</p>
+                    </div>
+                  </div>
+               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'Notes' && (
           <div className="flex flex-col items-center justify-center py-20 text-center opacity-30 italic">
              <Info className="w-8 h-8 mb-4" />
              <p className="text-sm font-bold uppercase tracking-widest">Module Loading...</p>
