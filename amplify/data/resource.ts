@@ -5,20 +5,51 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 ========================================================================*/
 
 const schema = a.schema({
-  // Global customizable settings for pricing tiers and rules
-  BusinessSettings: a.model({
+  // Represents a Pet Boarding Business (Company)
+  BusinessProfile: a.model({
     id: a.id().required(),
+    name: a.string().required(),
+    ownerEmail: a.string().required(),
+    address: a.string(),
+    currency: a.string(), // e.g. "INR", "USD"
+    logoUrl: a.string(),
+    
+    // Pricing Config (formerly BusinessSettings)
     puppyDailyRate: a.float(),
     smallBreedDailyRate: a.float(),
     mediumBreedDailyRate: a.float(),
     largeBreedDailyRate: a.float(),
     daycareRate: a.float(),
     gracePeriodHours: a.integer(),
-    latePickupTier1Rate: a.float(), // e.g. Daycare charge for < 8 hrs
+    lateFeeSlabs: a.string(), // JSON string representing fee tiers
     advancePaymentAmount: a.float(),
-  }).authorization(allow => [allow.publicApiKey()]), // Replace with auth later
 
-  // Client profiles mapped to Pets and Bookings
+    // Relationships
+    clients: a.hasMany('Client', 'businessId'),
+    invitations: a.hasMany('BusinessInvitation', 'businessId'), // If business sends invites to sub-admins
+  }).authorization(allow => [
+    allow.publicApiKey(), // Temporarily for dev
+    allow.owner(), // Only the business owner can manage their profile
+    allow.group('Admins') // Super admins can view/manage
+  ]),
+
+  // Invitation for a NEW Company to join the platform
+  BusinessInvitation: a.model({
+    code: a.string().required(),
+    businessEmail: a.string().required(),
+    businessName: a.string(),
+    status: a.enum(['PENDING', 'ACCEPTED', 'EXPIRED']),
+    expiresAt: a.datetime().required(),
+    invitedBy: a.string(), // Super admin email
+    
+    // Optional link to businessId once accepted
+    businessId: a.id(),
+  }).authorization(allow => [
+    allow.publicApiKey(),
+    allow.group('Admins')
+  ]),
+
+  // Consumer (Pet Parent) profiles mapped to a specific Business
   Client: a.model({
     name: a.string().required(),
     phone: a.string().required(),
@@ -29,13 +60,17 @@ const schema = a.schema({
     // Detailed Address Info
     address1: a.string(),
     address2: a.string(),
+    city: a.string(),
+    state: a.string(),
     country: a.string(),
+    pincode: a.string(),
     
     // Business Context
-    homeCompany: a.string(), // e.g. "Suhana's Home Boarding"
+    businessId: a.id(), // Links to BusinessProfile
+    business: a.belongsTo('BusinessProfile', 'businessId'),
     
     // Legal & App Status
-    idDocument: a.string(), // Key for S3
+    idDocument: a.string(),
     tcAccepted: a.boolean(),
     isAppUser: a.boolean(),
     
@@ -49,10 +84,11 @@ const schema = a.schema({
     name: a.string().required(),
     breed: a.string(),
     size: a.enum(['SMALL', 'MEDIUM', 'LARGE', 'GIANT']),
-    petType: a.string(), // e.g. "Dog"
-    gender: a.string(), // MALE/FEMALE
+    petType: a.string(),
+    gender: a.string(),
     birthday: a.date(),
     behaviour: a.string(),
+    weight: a.float(),
     
     // Health & Diet
     dietaryPreference: a.string(),
@@ -63,16 +99,14 @@ const schema = a.schema({
     
     // Vaccinations & Prevention
     vaxStatus: a.string(),
-    vaccinations: a.string(), // Detailed list or JSON string
-    vaxExpiryDate: a.date(), // Legacy support if needed
-    
+    vaccinations: a.string(),
     tickPrevention: a.boolean(),
     tickPrevDate: a.date(),
     tickPrevMethod: a.string(),
     dewormingDueDate: a.date(),
     
     // Record Proofs
-    vaxProof1: a.string(), // Keys for S3 or photo URLs
+    vaxProof1: a.string(),
     vaxProof2: a.string(),
     vaxProof3: a.string(),
     vaxProof4: a.string(),
@@ -88,9 +122,8 @@ const schema = a.schema({
     guardianContact: a.string(),
     
     // Operational
-    status: a.string(), // ACTIVE/ARCHIVED/etc.
-    ageMonths: a.integer(), // Calculated or static record
-    dietaryNotes: a.string(), // Legacy notes field
+    status: a.string(), // ACTIVE/ARCHIVED
+    ageMonths: a.integer(),
 
     // Relationships
     clientId: a.id(),
@@ -107,7 +140,7 @@ const schema = a.schema({
     status: a.enum(['UPCOMING', 'ACTIVE', 'PAST', 'NO_SHOW']),
     advancePaid: a.float(),
     totalAmountCalculated: a.float(),
-    requiresDaycareCharge: a.boolean(), // Calculated late buffer
+    requiresDaycareCharge: a.boolean(),
     invoiceLink: a.string(),
 
     // Relationships

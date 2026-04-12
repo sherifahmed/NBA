@@ -10,7 +10,9 @@ import {
   Building,
   LogOut,
   Key,
-  UserCircle
+  UserCircle,
+  ShieldCheck,
+  Fingerprint
 } from 'lucide-react';
 import Dashboard from './pages/Dashboard';
 import BookingRecords from './pages/BookingRecords';
@@ -18,6 +20,12 @@ import BookingDetails from './pages/BookingDetails';
 import ClientDatabase from './pages/ClientDatabase';
 import ClientDetails from './pages/ClientDetails';
 import BusinessSettings from './pages/BusinessSettings';
+import SuperAdminInvites from './pages/SuperAdminInvites';
+import SecurityCenter from './pages/SecurityCenter';
+import CompanyOnboarding from './pages/CompanyOnboarding';
+
+import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
 
 const ThemeContext = createContext({
   isDark: true,
@@ -45,14 +53,11 @@ const UserDropdown = ({ isMobile = false }: { isMobile?: boolean }) => {
             <Link to="/settings" onClick={() => setIsOpen(false)} className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-cyan-400 transition-colors font-bold">
               <Building className="w-4 h-4" /> My Business
             </Link>
+            <Link to="/security" onClick={() => setIsOpen(false)} className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors font-bold">
+              <Key className="w-4 h-4" /> Identity & Biometrics
+            </Link>
             <div className="h-px bg-white/5 w-full" />
-            <button onClick={() => { setIsOpen(false); alert('Login Flow Stub'); }} className="w-full flex items-center gap-2 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors text-left font-semibold">
-              <UserCircle className="w-4 h-4" /> Sign In
-            </button>
-            <button onClick={() => { setIsOpen(false); alert('Forgot Password Flow Stub'); }} className="w-full flex items-center gap-2 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors text-left font-semibold border-b border-white/5">
-              <Key className="w-4 h-4" /> Reset Password
-            </button>
-            <button onClick={() => { setIsOpen(false); alert('Logout Flow Stub'); }} className="w-full flex items-center gap-2 px-4 py-3 text-red-500 bg-red-500/5 hover:bg-red-500/10 hover:text-red-400 transition-colors text-left font-semibold">
+            <button onClick={() => { setIsOpen(false); alert('Logout logic via Authenticator signatures'); }} className="w-full flex items-center gap-2 px-4 py-3 text-red-500 bg-red-500/5 hover:bg-red-500/10 hover:text-red-400 transition-colors text-left font-semibold">
               <LogOut className="w-4 h-4 shrink-0" /> Sign Out
             </button>
           </div>
@@ -67,8 +72,17 @@ const AppSidebar = ({ isDark, toggleTheme, location }: any) => {
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Booking Records', path: '/bookings', icon: CalendarDays },
     { name: 'Client Database', path: '/clients', icon: Users },
-    { name: 'Settings', path: '/settings', icon: Settings },
   ];
+
+  const { user } = useAuthenticator();
+  const isAdmin = user?.signInDetails?.loginId === 'sherif@bbaconsult.com' || user?.userId === 'sherif@bbaconsult.com';
+
+  if (isAdmin) {
+    navLinks.push({ name: 'Admin Hub', path: '/super-admin', icon: ShieldCheck });
+  }
+
+  navLinks.push({ name: 'Security', path: '/security', icon: Fingerprint });
+  navLinks.push({ name: 'Settings', path: '/settings', icon: Settings });
 
   return (
     <aside className="w-72 bg-slate-950 border-r border-white/5 flex flex-col justify-between hidden md:flex sticky top-0 h-screen overflow-y-auto">
@@ -170,7 +184,7 @@ const Layout = () => {
   );
 };
 
-function App() {
+const App = () => {
   const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
@@ -187,20 +201,33 @@ function App() {
 
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="bookings" element={<BookingRecords />} />
-            <Route path="bookings/:id" element={<BookingDetails />} />
-            <Route path="clients" element={<ClientDatabase />} />
-            <Route path="clients/:id" element={<ClientDetails />} />
-            <Route path="settings" element={<BusinessSettings />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <Authenticator.Provider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Company Onboarding Flow */}
+            <Route path="/onboard/:code?" element={<CompanyOnboarding />} />
+            
+            {/* Protected Application Routes */}
+            <Route path="/" element={
+              <Authenticator hideSignUp>
+                <Layout />
+              </Authenticator>
+            }>
+              <Route index element={<Dashboard />} />
+              <Route path="bookings" element={<BookingRecords />} />
+              <Route path="bookings/:id" element={<BookingDetails />} />
+              <Route path="clients" element={<ClientDatabase />} />
+              <Route path="clients/:id" element={<ClientDetails />} />
+              <Route path="super-admin" element={<SuperAdminInvites />} />
+              <Route path="security" element={<SecurityCenter />} />
+              <Route path="settings" element={<BusinessSettings />} />
+              <Route path="*" element={<Dashboard />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </Authenticator.Provider>
     </ThemeContext.Provider>
   );
-}
+};
 
 export default App;
