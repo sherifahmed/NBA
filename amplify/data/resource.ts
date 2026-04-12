@@ -26,6 +26,19 @@ const schema = a.schema({
     onboardingStatus: a.enum(['PENDING', 'COMPLETED']),
     whatsappWaMeLink: a.string(),
     
+    // Detailed Address Info
+    address1: a.string(),
+    address2: a.string(),
+    country: a.string(),
+    
+    // Business Context
+    homeCompany: a.string(), // e.g. "Suhana's Home Boarding"
+    
+    // Legal & App Status
+    idDocument: a.string(), // Key for S3
+    tcAccepted: a.boolean(),
+    isAppUser: a.boolean(),
+    
     // Relationships
     pets: a.hasMany('Pet', 'clientId'),
     bookings: a.hasMany('Booking', 'clientId'),
@@ -36,10 +49,48 @@ const schema = a.schema({
     name: a.string().required(),
     breed: a.string(),
     size: a.enum(['SMALL', 'MEDIUM', 'LARGE', 'GIANT']),
-    ageMonths: a.integer(),
-    vaccinationExpiryDate: a.date(),
+    petType: a.string(), // e.g. "Dog"
+    gender: a.string(), // MALE/FEMALE
+    birthday: a.date(),
+    behaviour: a.string(),
+    
+    // Health & Diet
+    dietaryPreference: a.string(),
+    allergies: a.string(),
+    neuteredStatus: a.boolean(),
+    lastHeatMonth: a.string(),
+    lastHeatYear: a.string(),
+    
+    // Vaccinations & Prevention
+    vaxStatus: a.string(),
+    vaccinations: a.string(), // Detailed list or JSON string
+    vaxExpiryDate: a.date(), // Legacy support if needed
+    
+    tickPrevention: a.boolean(),
+    tickPrevDate: a.date(),
+    tickPrevMethod: a.string(),
     dewormingDueDate: a.date(),
-    dietaryNotes: a.string(),
+    
+    // Record Proofs
+    vaxProof1: a.string(), // Keys for S3 or photo URLs
+    vaxProof2: a.string(),
+    vaxProof3: a.string(),
+    vaxProof4: a.string(),
+    petPhoto: a.string(),
+    
+    // Medical Contacts
+    medication: a.boolean(),
+    medicationDetail: a.string(),
+    majorIllnessHistory: a.string(),
+    vetName: a.string(),
+    vetContact: a.string(),
+    guardianName: a.string(),
+    guardianContact: a.string(),
+    
+    // Operational
+    status: a.string(), // ACTIVE/ARCHIVED/etc.
+    ageMonths: a.integer(), // Calculated or static record
+    dietaryNotes: a.string(), // Legacy notes field
 
     // Relationships
     clientId: a.id(),
