@@ -3,6 +3,7 @@ import { defineAuth, secret } from '@aws-amplify/backend';
 export const auth = defineAuth({
   loginWith: {
     email: true,
+    /*
     externalProviders: {
       google: {
         clientId: secret('GOOGLE_CLIENT_ID'),
@@ -20,14 +21,15 @@ export const auth = defineAuth({
         clientSecret: secret('MICROSOFT_CLIENT_SECRET'),
         issuerUrl: 'https://login.microsoftonline.com/common/v2.0',
         scopes: ['email', 'profile', 'openid']
-      }]
+      }],
+      callbackUrls: ['http://localhost:5173/'],
+      logoutUrls: ['http://localhost:5173/'],
     }
+    */
   },
   multifactor: {
     mode: 'OPTIONAL',
-    sms: {
-      smsMessage: (code) => `Your NBA verification code is: ${code}`,
-    }
+    sms: true,
   },
   userAttributes: {
     "custom:is_super_admin": {

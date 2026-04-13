@@ -1,16 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { generateClient } from 'aws-amplify/api';
+import type { Schema } from '../../amplify/data/resource';
 import { 
   Plus, Copy,
   Calendar, Mail, ExternalLink,
   MessageSquare,
-  Hash, Info
+  Hash, Info, Check, Send
 } from 'lucide-react';
+
+const client = generateClient<Schema>();
 
 const SuperAdminInvites = () => {
   const [activeTab, setActiveTab] = useState<'Invitations' | 'Messaging'>('Invitations');
-  const [invites, setInvites] = useState<any[]>([
-    { id: '1', code: 'A7K2-W', email: 'doggy-daycare@test.com', name: 'Happy Paws Ltd', status: 'PENDING', expiresAt: '2026-04-14T10:00:00Z' }
-  ]);
+  const [invites, setInvites] = useState<any[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   
   const [template, setTemplate] = useState(`Hi there!
 {{businessName}} CHARGES are
@@ -28,28 +31,65 @@ Please take 5 minutes to fill this ONE-TIME onboarding form {{link}}`);
 
   const [newInvite, setNewInvite] = useState({ name: '', email: '' });
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch existing invites on mount
+  useEffect(() => {
+    const fetchInvites = async () => {
+      try {
+        const { data } = await client.models.BusinessInvitation.list();
+        setInvites(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+      } catch (err) {
+        console.error('Error fetching invites:', err);
+      }
+    };
+    fetchInvites();
+  }, []);
 
   const generateCode = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase().replace(/(.{3})/, '$1-');
   };
 
-  const createInvite = (e: React.FormEvent) => {
+  const createInvite = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const code = generateCode();
     const expires = new Date();
     expires.setHours(expires.getHours() + 48);
     
-    setInvites([{
-      id: Date.now().toString(),
-      code,
-      email: newInvite.email,
-      name: newInvite.name,
-      status: 'PENDING',
-      expiresAt: expires.toISOString()
-    }, ...invites]);
+    try {
+      const { data: invite } = await client.models.BusinessInvitation.create({
+        code,
+        businessEmail: newInvite.email,
+        businessName: newInvite.name,
+        status: 'PENDING',
+        expiresAt: expires.toISOString(),
+      });
+
+      if (invite) {
+        setInvites([invite, ...invites]);
+        setNewInvite({ name: '', email: '' });
+        setShowForm(false);
+      }
+    } catch (err) {
+      console.error('Error creating invite:', err);
+      alert('Failed to save to database. Check console.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyInvitationMessage = (invite: any) => {
+    const url = `${window.location.origin}/onboard/${invite.code}`;
+    const message = `Hello ${invite.businessName || 'Business Owner'},\n\nWe are excited to invite you to the NBA (Neelus Boarding Adventure) platform! 🐾\n\nPlease use the following link to onboard your business and set up your workspace:\n\n${url}\n\n(Invitation Code: ${invite.code})\n\nLooking forward to having you on board!`;
     
-    setNewInvite({ name: '', email: '' });
-    setShowForm(false);
+    navigator.clipboard.writeText(message).then(() => {
+      setCopiedId(invite.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }).catch(err => {
+      console.error('Clipboard error:', err);
+      alert('Failed to copy. Please copy manually: ' + url);
+    });
   };
 
   return (
@@ -115,18 +155,24 @@ Please take 5 minutes to fill this ONE-TIME onboarding form {{link}}`);
                   </div>
                   <div className="md:col-span-2 flex justify-end gap-3 mt-2">
                      <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 rounded-xl text-slate-400 font-bold hover:text-white">Cancel</button>
-                     <button type="submit" className="px-8 py-3 rounded-xl bg-white text-slate-950 font-black text-xs uppercase tracking-widest">Generate Invite</button>
-                  </div>
-               </form>
-            </div>
-          )}
+                      <button 
+                        type="submit" 
+                        disabled={loading}
+                        className="px-8 py-3 rounded-xl bg-white text-slate-950 font-black text-xs uppercase tracking-widest disabled:opacity-50"
+                      >
+                        {loading ? 'Generating...' : 'Generate Invite'}
+                      </button>
+                   </div>
+                </form>
+             </div>
+           )}
 
-          <div className="space-y-4">
-            {invites.map(invite => (
-              <div key={invite.id} className="premium-glass p-6 border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6 group">
+           <div className="space-y-4">
+             {invites.map(invite => (
+               <div key={invite.id} className="premium-glass p-6 border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6 group">
                 <div className="flex-1">
                    <div className="flex items-center gap-3 mb-2">
-                     <h3 className="text-xl font-black text-white italic tracking-tight">{invite.name}</h3>
+                     <h3 className="text-xl font-black text-white italic tracking-tight">{invite.businessName || invite.name}</h3>
                      <span className={`text-[9px] font-black px-2 py-0.5 rounded-md border ${
                        invite.status === 'PENDING' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
                      }`}>
@@ -134,7 +180,7 @@ Please take 5 minutes to fill this ONE-TIME onboarding form {{link}}`);
                      </span>
                    </div>
                    <div className="flex flex-wrap gap-x-6 gap-y-2">
-                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-bold"><Mail className="w-3.5 h-3.5" /> {invite.email}</span>
+                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-bold"><Mail className="w-3.5 h-3.5" /> {invite.businessEmail || invite.email}</span>
                       <span className="flex items-center gap-1.5 text-xs text-slate-400 font-bold"><Calendar className="w-3.5 h-3.5" /> 48hrs Remaining</span>
                    </div>
                 </div>
@@ -143,17 +189,15 @@ Please take 5 minutes to fill this ONE-TIME onboarding form {{link}}`);
                    <div className="bg-slate-950/80 px-6 py-3 rounded-2xl border border-white/10 flex items-center justify-between gap-6 min-w-[200px]">
                       <span className="text-2xl font-black text-white tracking-widest font-mono">{invite.code}</span>
                       <button 
-                        onClick={() => {
-                          navigator.clipboard.writeText(`https://nba.amplifyapp.com/onboard/${invite.code}`);
-                          alert('Url Copied');
-                        }}
-                        className="p-2 text-slate-500 hover:text-cyan-400 transition-colors"
+                        onClick={() => copyInvitationMessage(invite)}
+                        className={`p-2 transition-all ${copiedId === invite.id ? 'text-emerald-400 scale-125' : 'text-slate-500 hover:text-cyan-400'}`}
+                        title="Copy Invitation Message"
                       >
-                        <Copy className="w-5 h-5" />
+                        {copiedId === invite.id ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                       </button>
                    </div>
-                   <button className="p-3.5 rounded-2xl bg-slate-900 border border-white/5 text-slate-300 hover:text-white transition-all opacity-0 group-hover:opacity-100">
-                      <ExternalLink className="w-5 h-5" />
+                   <button className="flex items-center gap-2 p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 transition-all font-bold text-xs">
+                      <Send className="w-4 h-4" /> Share
                    </button>
                 </div>
               </div>

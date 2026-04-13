@@ -1,12 +1,76 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Fingerprint, Smartphone, Trash2, 
-  ShieldCheck, ArrowLeft 
+  ShieldCheck, ArrowLeft, Mail,
+  Phone, AlertCircle, Loader2,
+  CheckCircle2, Send
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { generateClient } from 'aws-amplify/api';
+import { confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
+import type { Schema } from '../../amplify/data/resource';
+
+const client = generateClient<Schema>();
 
 const SecurityCenter = () => {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<any>(null);
+  const [verifying, setVerifying] = useState(false);
+  const [otpMode, setOtpMode] = useState<'EMAIL' | 'PHONE' | null>(null);
+  const [otpCode, setOtpCode] = useState('');
+  const [status, setStatus] = useState<{ type: 'error' | 'success', msg: string } | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data } = await client.models.BusinessProfile.list();
+      if (data && data.length > 0) setProfile(data[0]);
+    };
+    fetchProfile();
+  }, []);
+
+  const handleVerifyRequest = async (type: 'EMAIL' | 'PHONE') => {
+    setVerifying(true);
+    setStatus(null);
+    try {
+      await resendSignUpCode({ username: profile?.businessEmail || '' });
+      setOtpMode(type);
+      setStatus({ type: 'success', msg: `Code sent to your ${type.toLowerCase()}` });
+    } catch (err: any) {
+      setStatus({ type: 'error', msg: err.message || "Failed to send code" });
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const handleOtpSubmit = async () => {
+    setVerifying(true);
+    setStatus(null);
+    try {
+      await confirmSignUp({
+        username: profile?.businessEmail || '',
+        confirmationCode: otpCode
+      });
+
+      // Update local profile state
+      await client.models.BusinessProfile.update({
+        id: profile.id,
+        isEmailVerified: otpMode === 'EMAIL' ? true : profile.isEmailVerified,
+        isPhoneVerified: otpMode === 'PHONE' ? true : profile.isPhoneVerified
+      });
+
+      setStatus({ type: 'success', msg: "Verified successfully!" });
+      setOtpMode(null);
+      setOtpCode('');
+      // Refresh
+      const { data } = await client.models.BusinessProfile.list();
+      setProfile(data[0]);
+    } catch (err: any) {
+      setStatus({ type: 'error', msg: err.message || "Invalid code" });
+    } finally {
+      setVerifying(false);
+    }
+  };
+
   const [passkeys] = useState<any[]>([
     { id: '1', name: 'iPhone 15 Pro', added: '2026-04-12', lastUsed: 'Just now' }
   ]);
@@ -33,6 +97,108 @@ const SecurityCenter = () => {
       </header>
 
       <div className="space-y-6">
+        {/* Account Verification Matrix */}
+        <div className="premium-glass p-8 border border-white/5 space-y-8">
+           <div className="flex items-center justify-between">
+              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Identity Verification</h3>
+              {status && (
+                <div className={`text-[10px] font-bold px-3 py-1 rounded-full ${status.type === 'success' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>
+                  {status.msg}
+                </div>
+              )}
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Email Verification Card */}
+              <div className={`p-6 rounded-2xl border transition-all ${profile?.isEmailVerified ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-slate-900 border-white/5'}`}>
+                 <div className="flex items-start justify-between mb-4">
+                    <div className={`p-3 rounded-xl ${profile?.isEmailVerified ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-800 text-slate-500'}`}>
+                       <Mail className="w-6 h-6" />
+                    </div>
+                    {profile?.isEmailVerified ? (
+                       <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    ) : (
+                       <AlertCircle className="w-5 h-5 text-amber-500" />
+                    )}
+                 </div>
+                 <h4 className="text-sm font-black text-white uppercase tracking-tight mb-1">Email Address</h4>
+                 <p className="text-[10px] font-bold text-slate-500 truncate mb-4">{profile?.businessEmail || 'Loading...'}</p>
+                 
+                 {!profile?.isEmailVerified && !otpMode && (
+                    <button 
+                      onClick={() => handleVerifyRequest('EMAIL')}
+                      disabled={verifying}
+                      className="w-full py-2.5 bg-white text-slate-950 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-colors"
+                    >
+                      Verify Now
+                    </button>
+                 )}
+              </div>
+
+              {/* Phone Verification Card */}
+              <div className={`p-6 rounded-2xl border transition-all ${profile?.isPhoneVerified ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-slate-900 border-white/5'}`}>
+                 <div className="flex items-start justify-between mb-4">
+                    <div className={`p-3 rounded-xl ${profile?.isPhoneVerified ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-800 text-slate-500'}`}>
+                       <Phone className="w-6 h-6" />
+                    </div>
+                    {profile?.isPhoneVerified ? (
+                       <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    ) : (
+                       <AlertCircle className="w-5 h-5 text-amber-500" />
+                    )}
+                 </div>
+                 <h4 className="text-sm font-black text-white uppercase tracking-tight mb-1">Mobile Phone</h4>
+                 <p className="text-[10px] font-bold text-slate-500 truncate mb-4">{profile?.businessPhone || 'Not provided'}</p>
+                 
+                 {!profile?.isPhoneVerified && !otpMode && (
+                    <button 
+                      onClick={() => handleVerifyRequest('PHONE')}
+                      disabled={verifying}
+                      className="w-full py-2.5 bg-white text-slate-950 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-colors"
+                    >
+                      Verify Now
+                    </button>
+                 )}
+              </div>
+           </div>
+
+           {/* OTP Input UI */}
+           {otpMode && (
+              <div className="pt-8 border-t border-white/5 animate-in slide-in-from-bottom-4 duration-500">
+                 <div className="max-w-xs mx-auto text-center space-y-6">
+                    <div>
+                       <h4 className="text-lg font-black text-white italic tracking-tight mb-1">Enter OTP</h4>
+                       <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">We've sent a code to your {otpMode.toLowerCase()}</p>
+                    </div>
+                    <div className="relative">
+                       <input 
+                         maxLength={6}
+                         placeholder="000000"
+                         value={otpCode}
+                         onChange={e => setOtpCode(e.target.value)}
+                         className="w-full bg-slate-950 border border-cyan-500/30 rounded-2xl py-4 text-3xl font-black text-center tracking-[0.4em] font-mono focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all"
+                       />
+                       {verifying && <Loader2 className="absolute right-4 top-5 w-5 h-5 animate-spin text-cyan-400" />}
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                       <button 
+                         onClick={handleOtpSubmit}
+                         disabled={otpCode.length !== 6 || verifying}
+                         className="py-3 bg-cyan-500 text-slate-950 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-all active:scale-[0.98] disabled:opacity-50"
+                       >
+                         Verify Code
+                       </button>
+                       <button 
+                         onClick={() => setOtpMode(null)}
+                         className="py-3 bg-slate-950 border border-white/5 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest hover:text-white transition-all"
+                       >
+                         Cancel
+                       </button>
+                    </div>
+                 </div>
+              </div>
+           )}
+        </div>
         {/* Passkey Status */}
         <div className="premium-glass p-8 border border-cyan-500/10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
            <div className="absolute top-0 right-0 p-4 opacity-5">

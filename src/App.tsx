@@ -39,6 +39,7 @@ export const useTheme = () => useContext(ThemeContext);
 
 const UserDropdown = ({ isMobile = false }: { isMobile?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { signOut } = useAuthenticator();
 
   return (
     <div className="relative">
@@ -60,7 +61,10 @@ const UserDropdown = ({ isMobile = false }: { isMobile?: boolean }) => {
               <Key className="w-4 h-4" /> Identity & Biometrics
             </Link>
             <div className="h-px bg-white/5 w-full" />
-            <button onClick={() => { setIsOpen(false); alert('Logout logic via Authenticator signatures'); }} className="w-full flex items-center gap-2 px-4 py-3 text-red-500 bg-red-500/5 hover:bg-red-500/10 hover:text-red-400 transition-colors text-left font-semibold">
+            <button 
+              onClick={() => { setIsOpen(false); signOut(); }} 
+              className="w-full flex items-center gap-2 px-4 py-3 text-red-500 bg-red-500/5 hover:bg-red-500/10 hover:text-red-400 transition-colors text-left font-semibold"
+            >
               <LogOut className="w-4 h-4 shrink-0" /> Sign Out
             </button>
           </div>

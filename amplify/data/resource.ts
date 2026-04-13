@@ -19,7 +19,25 @@ const schema = a.schema({
     id: a.id().required(),
     name: a.string().required(),
     ownerEmail: a.string().required(),
+
+    // Contact Info & Verification
+    businessEmail: a.string(),
+    businessPhone: a.string(),
+    isEmailVerified: a.boolean().default(false),
+    isPhoneVerified: a.boolean().default(false),
+    isWhatsAppVerified: a.boolean().default(false),
+
+    // UX Preferences
+    preferredCommunicationMethod: a.enum(['EMAIL', 'SMS', 'WHATSAPP']),
+    countryCode: a.string(), // ISO Code (e.g. "IN")
+    phonePrefix: a.string(), // e.g. "+91"
+
+    // Georeferencing
     address: a.string(),
+    latitude: a.float(),
+    longitude: a.float(),
+    locationName: a.string(), // Resolved name from Google/OSM
+
     currency: a.string(), // e.g. "INR", "USD"
     logoUrl: a.string(),
     
@@ -73,8 +91,8 @@ const schema = a.schema({
     expiresAt: a.datetime().required(),
     invitedBy: a.string(), // Super admin email
     
-    // Optional link to businessId once accepted
     businessId: a.id(),
+    business: a.belongsTo('BusinessProfile', 'businessId'),
   }).authorization(allow => [
     allow.publicApiKey(),
     allow.group('Admins')

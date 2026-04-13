@@ -1,4 +1,4 @@
-
+import { useState, useEffect } from 'react';
 import { 
   Plus, 
   Users, 
@@ -11,9 +11,16 @@ import {
   Clock,
   Activity,
   LogIn,
-  LogOut
+  LogOut,
+  ShieldAlert,
+  CheckCircle2,
+  ExternalLink
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { generateClient } from 'aws-amplify/api';
+import type { Schema } from '../../amplify/data/resource';
+
+const client = generateClient<Schema>();
 
 const SECTION_TITLE_CLASS = "text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 flex justify-between items-center";
 
@@ -74,10 +81,58 @@ const ReminderItem = ({ title, date, type }: any) => (
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { data } = await client.models.BusinessProfile.list();
+        if (data && data.length > 0) {
+          setProfile(data[0]);
+        }
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const isPreferenceVerified = () => {
+    if (!profile) return true;
+    const method = profile.preferredCommunicationMethod;
+    if (method === 'EMAIL') return profile.isEmailVerified;
+    if (method === 'SMS') return profile.isPhoneVerified;
+    if (method === 'WHATSAPP') return profile.isWhatsAppVerified || profile.isPhoneVerified;
+    return true;
+  };
+
+  const needsVerification = profile && !isPreferenceVerified();
 
   return (
     <div className="pb-12 md:pb-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-700 font-sans">
       
+      {/* Verification Banner */}
+      {needsVerification && (
+        <div className="mb-8 p-1 rounded-2xl bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border border-amber-500/20 backdrop-blur-xl animate-in slide-in-from-top-4 duration-500">
+           <div className="flex flex-col md:flex-row items-center justify-between p-4 gap-4">
+              <div className="flex items-center gap-4">
+                 <div className="w-12 h-12 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                    <ShieldAlert className="w-6 h-6 text-slate-950" />
+                 </div>
+                 <div>
+                    <h3 className="text-sm font-black text-amber-500 uppercase tracking-widest leading-tight">Verification Required</h3>
+                    <p className="text-xs font-bold text-slate-400 mt-0.5">Your primary channel (<span className="text-white italic">{profile.preferredCommunicationMethod}</span>) is not yet verified. Many messaging features are restricted.</p>
+                 </div>
+              </div>
+              <button 
+                 onClick={() => navigate('/security')}
+                 className="flex items-center gap-2 px-6 py-3 bg-white text-slate-950 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-amber-400 transition-colors shadow-xl"
+              >
+                 Verify Now <ExternalLink className="w-4 h-4" />
+              </button>
+           </div>
+        </div>
+      )}
       {/* Header Section */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 mb-6 md:mb-10 px-1">
         <div>
