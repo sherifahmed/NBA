@@ -29,6 +29,7 @@ import ConsumerOnboarding from './pages/ConsumerOnboarding';
 
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
+import { AmbientBackground } from './components/AmbientBackground';
 
 const ThemeContext = createContext({
   isDark: true,
@@ -210,6 +211,7 @@ const App = () => {
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>
       <Authenticator.Provider>
+        <AmbientBackground />
         <BrowserRouter>
           <Routes>
             {/* Public Entry Points */}
@@ -218,7 +220,24 @@ const App = () => {
             
             {/* Protected Business Operating System */}
             <Route path="/" element={
-              <Authenticator hideSignUp>
+              <Authenticator 
+                hideSignUp
+                components={{
+                  Header() {
+                    return (
+                      <div className="text-center mb-8">
+                        <div className="inline-flex flex-col items-center gap-4">
+                          <img src="/NBA-Icon.png" alt="NBA Logo" className="w-16 h-16 rounded-2xl shadow-2xl" />
+                          <div>
+                            <h1 className="text-3xl font-black text-white tracking-tighter">NBA OS</h1>
+                            <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Business Operating System</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                }}
+              >
                 <Layout />
               </Authenticator>
             }>
