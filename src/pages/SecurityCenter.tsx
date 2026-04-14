@@ -46,10 +46,17 @@ const SecurityCenter = () => {
     setVerifying(true);
     setStatus(null);
     try {
-      await confirmSignUp({
-        username: profile?.businessEmail || '',
-        confirmationCode: otpCode
-      });
+      try {
+        await confirmSignUp({
+          username: profile?.businessEmail || '',
+          confirmationCode: otpCode
+        });
+      } catch (err: any) {
+        // If user is already confirmed in Cognito, we can proceed to update our local DB
+        if (!err.message?.includes('CONFIRMED')) {
+          throw err;
+        }
+      }
 
       // Update local profile state
       await client.models.BusinessProfile.update({
@@ -65,6 +72,7 @@ const SecurityCenter = () => {
       const { data } = await client.models.BusinessProfile.list();
       setProfile(data[0]);
     } catch (err: any) {
+      console.error('OTP Error:', err);
       setStatus({ type: 'error', msg: err.message || "Invalid code" });
     } finally {
       setVerifying(false);
@@ -180,20 +188,31 @@ const SecurityCenter = () => {
                        />
                        {verifying && <Loader2 className="absolute right-4 top-5 w-5 h-5 animate-spin text-cyan-400" />}
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                       <button 
-                         onClick={handleOtpSubmit}
-                         disabled={otpCode.length !== 6 || verifying}
-                         className="py-3 bg-cyan-500 text-slate-950 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-all active:scale-[0.98] disabled:opacity-50"
-                       >
-                         Verify Code
-                       </button>
-                       <button 
-                         onClick={() => setOtpMode(null)}
-                         className="py-3 bg-slate-950 border border-white/5 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest hover:text-white transition-all"
-                       >
-                         Cancel
-                       </button>
+                    <div className="flex flex-col gap-3">
+                        <button 
+                          onClick={handleOtpSubmit}
+                          disabled={otpCode.length !== 6 || verifying}
+                          className="w-full py-4 bg-cyan-500 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-cyan-400 transition-all active:scale-[0.98] disabled:opacity-50 shadow-xl shadow-cyan-500/20"
+                        >
+                          Verify Code
+                        </button>
+                        <div className="flex gap-3">
+                          <button 
+                            type="button"
+                            onClick={() => handleVerifyRequest(otpMode!)}
+                            disabled={verifying}
+                            className="flex-1 py-3 bg-slate-900 border border-white/5 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest hover:text-white transition-all"
+                          >
+                            Resend Code
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => { setOtpMode(null); setStatus(null); }}
+                            className="flex-1 py-3 bg-slate-950 border border-white/5 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest hover:text-white transition-all"
+                          >
+                            Cancel
+                          </button>
+                        </div>
                     </div>
                  </div>
               </div>
