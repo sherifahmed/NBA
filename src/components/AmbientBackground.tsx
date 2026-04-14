@@ -9,8 +9,8 @@ export const AmbientBackground = () => (
     <div 
       className="absolute inset-0 opacity-[0.03]" 
       style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.5'%3E%3Cpath d='M0 100h200 M100 0v200' stroke-dasharray='2 4'/%3E%3Cpath d='M50 50h100 M50 150h100 M50 50v100 M150 50v100' stroke-opacity='0.5'/%3E%3Ccircle cx='50' cy='50' r='2'/%3E%3Ccircle cx='150' cy='50' r='2'/%3E%3Ccircle cx='50' cy='150' r='2'/%3E%3Ccircle cx='150' cy='150' r='2'/%3E%3Cg fill='%23ffffff' stroke='none'%3E%3Cpath d='M90 105c0-5 20-5 20 0c0 10-10 15-10 15s-10-5-10-15z'/%3E%3Ccircle cx='85' cy='90' r='4'/%3E%3Ccircle cx='95' cy='82' r='4'/%3E%3Ccircle cx='105' cy='82' r='4'/%3E%3Ccircle cx='115' cy='90' r='4'/%3E%3C/g%3E%3Cpath d='M100 120v30h20 M85 90l-15-15h-20 M115 90l15-15h20'/%3E%3C/g%3E%3C/svg%3E")`,
-        backgroundSize: '200px 200px'
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='240' height='240' viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.5'%3E%3Cpath d='M0 120h240 M120 0v240' stroke-dasharray='2 6'/%3E%3Cg fill='%23ffffff' stroke='none'%3E%3Cpath d='M120 125c-15 0-25 8-25 20c0 10 10 15 25 15s25-5 25-15c0-12-10-20-25-20z'/%3E%3Cpath d='M100 135c-12 0-20-15-20-25s8-15 20-15s15 10 15 25s-5 15-15 15z' transform='rotate(-25, 100, 115)'/%3E%3Cpath d='M112 120c-8 0-14-18-14-28s6-18 14-18s14 8 14 18s-6 28-14 28z' transform='rotate(-10, 112, 102)'/%3E%3Cpath d='M128 120c-8 0-14-18-14-28s6-18 14-18s14 8 14 18s-6 28-14 28z' transform='rotate(10, 128, 102)'/%3E%3Cpath d='M140 135c-12 0-20-15-20-25s8-15 20-15s20 5 20 15s-8 25-20 25z' transform='rotate(25, 140, 115)'/%3E%3C/g%3E%3Cpath d='M120 160v30 M90 125l-20-20 M150 125l20-20'/%3E%3C/g%3E%3C/svg%3E")`,
+        backgroundSize: '240px 240px'
       }} 
     />
   </div>
