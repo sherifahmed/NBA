@@ -31,6 +31,7 @@ const CompanyOnboarding = () => {
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmationCode, setConfirmationCode] = useState('');
+  const [geoStatus, setGeoStatus] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -92,6 +93,7 @@ const CompanyOnboarding = () => {
     setError(null);
     try {
       // 1. Sign Up in Cognito
+      setGeoStatus("Creating your account...");
       await signUp({
         username: formData.email,
         password: formData.password,
@@ -103,7 +105,8 @@ const CompanyOnboarding = () => {
         }
       });
 
-      // 2. Resolve Location (Georeference) - Added User-Agent for Nominatim compliance
+      // 2. Resolve Location - Now with user feedback
+      setGeoStatus("Pinpointing your business location...");
       let lat = 0, lon = 0;
       try {
         const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(formData.address)}`, {
@@ -115,10 +118,17 @@ const CompanyOnboarding = () => {
         if (geoData[0]) {
           lat = parseFloat(geoData[0].lat);
           lon = parseFloat(geoData[0].lon);
+          setGeoStatus("Location detected successfully!");
+        } else {
+          setGeoStatus("Note: Precise location could not be detected. Proceeding with manual cleanup later.");
         }
-      } catch (e) { console.warn('Geocoding failed', e); }
+      } catch (e) { 
+        console.warn('Geocoding failed', e); 
+        setGeoStatus("Location detection service unavailable. Proceeding...");
+      }
 
       // 3. Create Profile
+      setGeoStatus("Initializing workflow environment...");
       await client.models.BusinessProfile.create({
         name: formData.name,
         ownerEmail: formData.email,
@@ -142,6 +152,7 @@ const CompanyOnboarding = () => {
       setError(err.message || 'Failed to setup profile.');
     } finally {
       setVerifying(false);
+      setGeoStatus(null);
     }
   };
 
@@ -323,7 +334,7 @@ const CompanyOnboarding = () => {
                       <textarea 
                         value={formData.address}
                         onChange={e => setFormData({...formData, address: e.target.value})}
-                        placeholder="Full physical address for geocoding..."
+                        placeholder="Full physical address for location detection..."
                         className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white font-bold outline-none min-h-[60px] focus:ring-2 focus:ring-cyan-500/50 transition-all"
                       />
                    </div>
@@ -375,6 +386,12 @@ const CompanyOnboarding = () => {
                 {error && (
                   <div className="flex items-center gap-2 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold animate-pulse">
                     <AlertCircle className="w-4 h-4" /> {error}
+                  </div>
+                )}
+
+                {geoStatus && (
+                  <div className="text-[10px] font-black text-cyan-400 animate-pulse text-center mb-4 uppercase tracking-[0.2em]">
+                    {geoStatus}
                   </div>
                 )}
 
