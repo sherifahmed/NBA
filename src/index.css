@@ -76,54 +76,59 @@
   --amplify-components-fieldcontrol-focus-box-shadow: 0 0 0 1px #22d3ee;
 }
 
+/* High-Specificity Overrides for Amplify Authenticator */
+[data-amplify-authenticator] [data-amplify-router] {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  backdrop-filter: blur(32px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+  border-radius: 1.5rem !important;
+  margin-top: 1rem !important;
+}
+
+/* Ensure the card container itself is transparent to show the rounded router */
 .amplify-authenticator {
   @apply min-h-screen flex items-center justify-center p-4 !bg-transparent;
 }
 
-.amplify-card {
-  @apply !premium-glass !border-white/10;
-  background-color: rgba(15, 23, 42, 0.6) !important;
-  backdrop-filter: blur(32px) !important;
-  padding: 3rem 2rem !important;
+/* Internal overrides for form elements */
+[data-amplify-authenticator] .amplify-tabs {
+  @apply !border-none !mb-8;
 }
 
-.amplify-tabs {
-  @apply !border-none mb-8;
-}
-
-.amplify-tabs__item {
+[data-amplify-authenticator] .amplify-tabs__item {
   @apply !text-slate-500 !font-black !uppercase !tracking-widest !text-[10px] !border-b-2 !border-transparent !transition-all;
 }
 
-.amplify-tabs__item--active {
+[data-amplify-authenticator] .amplify-tabs__item--active {
   @apply !text-cyan-400 !border-cyan-400 !border-b-2;
 }
 
-.amplify-label {
+[data-amplify-authenticator] .amplify-label {
   @apply !text-[10px] !font-black !text-slate-500 !uppercase !tracking-widest !mb-2 !block;
 }
 
-.amplify-input {
+[data-amplify-authenticator] .amplify-input {
   @apply !bg-slate-950 !border-white/5 !text-white !rounded-xl !py-3 !px-4 !font-bold !outline-none !transition-all;
 }
 
-.amplify-input:focus {
+[data-amplify-authenticator] .amplify-input:focus {
   @apply !border-cyan-500/50 !ring-4 !ring-cyan-500/10;
 }
 
-.amplify-button[data-variation="primary"] {
-  @apply !bg-cyan-500 !text-slate-950 !font-black !uppercase !tracking-widest !py-4 !rounded-xl !shadow-xl !shadow-cyan-500/20 !hover:bg-cyan-400 !active:scale-[0.98] !transition-all !border-none !mt-4;
+[data-amplify-authenticator] button[data-variation="primary"] {
+  @apply !bg-cyan-500 !text-slate-950 !font-black !uppercase !tracking-widest !py-4 !rounded-xl !shadow-xl !shadow-cyan-500/20 hover:!bg-cyan-400 active:!scale-[0.98] !transition-all !border-none !mt-4;
 }
 
-.amplify-button[data-variation="link"] {
-  @apply !text-slate-500 !font-bold !hover:text-white !transition-colors;
+[data-amplify-authenticator] button[data-variation="link"] {
+  @apply !text-slate-500 !font-bold hover:!text-white !transition-colors;
 }
 
-.amplify-heading {
+[data-amplify-authenticator] .amplify-heading {
   @apply !text-white !font-black !italic !tracking-tight !text-2xl !mb-1;
 }
 
-.amplify-text {
+[data-amplify-authenticator] .amplify-text {
   @apply !text-slate-400 !text-sm !font-medium;
 }
 
