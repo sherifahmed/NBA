@@ -26,6 +26,7 @@ const schema = a.schema({
     isEmailVerified: a.boolean().default(false),
     isPhoneVerified: a.boolean().default(false),
     isWhatsAppVerified: a.boolean().default(false),
+    isActive: a.boolean().default(true), // Super Admin toggle for disabling client access
 
     // UX Preferences
     preferredCommunicationMethod: a.enum(['EMAIL', 'SMS', 'WHATSAPP']),

@@ -5,14 +5,16 @@ import {
   Plus, Copy,
   Calendar, Mail,
   MessageSquare,
-  Hash, Info, Check, Send
+  Hash, Info, Check, Send,
+  Building2, Phone
 } from 'lucide-react';
 
 const client = generateClient<Schema>();
 
 const SuperAdminInvites = () => {
-  const [activeTab, setActiveTab] = useState<'Invitations' | 'Messaging'>('Invitations');
+  const [activeTab, setActiveTab] = useState<'Invitations' | 'Active Businesses' | 'Messaging'>('Invitations');
   const [invites, setInvites] = useState<any[]>([]);
+  const [businesses, setBusinesses] = useState<any[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   
   const [template, setTemplate] = useState(`Hi there!
@@ -33,17 +35,21 @@ Please take 5 minutes to fill this ONE-TIME onboarding form {{link}}`);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Fetch existing invites on mount
+  // Fetch existing invites & businesses on mount
   useEffect(() => {
-    const fetchInvites = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await client.models.BusinessInvitation.list();
-        setInvites(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+        const [invitesRes, businessesRes] = await Promise.all([
+          client.models.BusinessInvitation.list(),
+          client.models.BusinessProfile.list()
+        ]);
+        setInvites(invitesRes.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+        setBusinesses(businessesRes.data);
       } catch (err) {
-        console.error('Error fetching invites:', err);
+        console.error('Error fetching data:', err);
       }
     };
-    fetchInvites();
+    fetchData();
   }, []);
 
   const generateCode = () => {
@@ -102,12 +108,12 @@ Please take 5 minutes to fill this ONE-TIME onboarding form {{link}}`);
           <p className="text-[10px] font-bold text-slate-500 tracking-[0.2em] uppercase">Control Center</p>
         </div>
         
-        <nav className="flex bg-slate-900/50 p-1 rounded-2xl border border-white/5">
-           {(['Invitations', 'Messaging'] as const).map(tab => (
+        <nav className="flex bg-slate-900/50 p-1 rounded-2xl border border-white/5 overflow-x-auto hide-scrollbar">
+           {(['Invitations', 'Active Businesses', 'Messaging'] as const).map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
                   activeTab === tab ? 'bg-white text-slate-950 shadow-lg' : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
@@ -203,6 +209,64 @@ Please take 5 minutes to fill this ONE-TIME onboarding form {{link}}`);
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {activeTab === 'Active Businesses' && (
+        <div className="space-y-6 animate-in fade-in duration-500">
+           <div className="flex justify-between items-center px-1">
+             <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest">Platform Clients</h2>
+             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{businesses.length} Total</span>
+           </div>
+
+           <div className="space-y-4">
+             {businesses.map(business => (
+               <div key={business.id} className={`premium-glass p-6 border flex flex-col md:flex-row md:items-center justify-between gap-6 group transition-all ${business.isActive === false ? 'opacity-50 border-red-500/20 grayscale' : 'border-white/5'}`}>
+                 <div className="flex-1">
+                   <div className="flex items-center gap-3 mb-2">
+                     <h3 className="text-xl font-black text-white italic tracking-tight">{business.name}</h3>
+                     <span className={`text-[9px] font-black px-2 py-0.5 rounded-md border ${
+                       business.isActive !== false ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'
+                     }`}>
+                       {business.isActive !== false ? 'ACTIVE' : 'SUSPENDED'}
+                     </span>
+                   </div>
+                   <div className="flex flex-wrap gap-x-6 gap-y-2">
+                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-bold"><Building2 className="w-3.5 h-3.5" /> ID: {business.id.slice(0, 8)}</span>
+                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-bold"><Mail className="w-3.5 h-3.5" /> {business.ownerEmail}</span>
+                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-bold"><Phone className="w-3.5 h-3.5" /> {business.businessPhone}</span>
+                   </div>
+                 </div>
+
+                 <div className="flex items-center gap-4">
+                   <button 
+                      onClick={async () => {
+                        const currentStatus = business.isActive !== false;
+                        if (!confirm(`Are you sure you want to ${currentStatus ? 'suspend' : 'reactivate'} ${business.name}?`)) return;
+                        try {
+                          await client.models.BusinessProfile.update({ id: business.id, isActive: !currentStatus });
+                          setBusinesses(businesses.map(b => b.id === business.id ? { ...b, isActive: !currentStatus } : b));
+                        } catch (err) {
+                           console.error(err); alert('Failed to update status.');
+                        }
+                      }}
+                      className={`px-6 py-3 rounded-xl font-black text-xs transition-all uppercase tracking-widest border ${
+                        business.isActive !== false 
+                        ? 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500 hover:text-white'
+                        : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500 hover:text-white'
+                      }`}
+                   >
+                     {business.isActive !== false ? 'Disable Client' : 'Enable Client'}
+                   </button>
+                 </div>
+               </div>
+             ))}
+             {businesses.length === 0 && (
+                <div className="text-center py-12 text-slate-500 font-bold text-sm">
+                   No onboarded businesses found yet.
+                </div>
+             )}
+           </div>
         </div>
       )}
 

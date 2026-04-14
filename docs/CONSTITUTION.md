@@ -46,6 +46,10 @@ Whenever tackling a specific problem step, the system will internally channel th
 - **No Direct to Main**: All AI-driven development must occur in dedicated feature branches (e.g., `feature/ai-whatsapp-bot`, `fix/glass-ui-bug`).
 - **QA Gate**: A branch must pass the full test suite before proposing a merge.
 - **CEO Approval**: Merging to `main` requires Sherif's explicit confirmation.
+- **Semantic Auto-Versioning**: The AI must proactively bump the `version` field in `package.json` for EVERY code change executed. 
+  - Standard changes = bump patch (x.y.**z**).
+  - "Sub-major" requests = bump minor (x.**y**.0).
+  - "Major" requests = bump major (**x**.0.0).
 
 ### 💻 5. TERMINAL & WORKSPACE PERMISSIONS
 - **Clearance Level**: The AI is pre-authorized to run development terminals, run git commands, execute package managers (`npm`), and spin up local test servers without constantly requesting permission for standard tools.

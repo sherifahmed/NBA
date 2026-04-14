@@ -92,6 +92,19 @@ const CompanyOnboarding = () => {
     setVerifying(true);
     setError(null);
     try {
+      // 0. Enforce Phone Number Uniqueness Validation
+      setGeoStatus("Verifying phone number availability...");
+      const fullPhone = `${selectedCountry.prefix}${formData.phone.replace(/\s/g, '')}`;
+      const { data: existingBusinesses } = await client.models.BusinessProfile.list({
+        filter: { businessPhone: { eq: fullPhone } }
+      });
+      
+      if (existingBusinesses && existingBusinesses.length > 0) {
+        setError("This phone number is already registered to an active business.");
+        setVerifying(false);
+        setGeoStatus(null);
+        return;
+      }
       // 1. Sign Up in Cognito
       setGeoStatus("Creating your account...");
       await signUp({
@@ -283,21 +296,24 @@ const CompanyOnboarding = () => {
                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none block">Primary Communication Channel</label>
                    <div className="grid grid-cols-3 gap-2">
                       {[
-                        { id: 'EMAIL', icon: Mail, label: 'Email' },
-                        { id: 'WHATSAPP', icon: MessageSquare, label: 'WhatsApp' },
-                        { id: 'SMS', icon: Phone, label: 'SMS' }
+                        { id: 'EMAIL', icon: Mail, label: 'Email', disabled: false },
+                        { id: 'WHATSAPP', icon: MessageSquare, label: 'WhatsApp', disabled: false },
+                        { id: 'SMS', icon: Phone, label: 'SMS (Future)', disabled: true }
                       ].map(method => (
                         <button
                           key={method.id}
+                          disabled={method.disabled}
                           onClick={() => setFormData({...formData, preferredMethod: method.id as any})}
-                          className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${
+                          className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
                             formData.preferredMethod === method.id 
                             ? 'bg-cyan-500/10 border-cyan-500 text-cyan-400 shadow-lg shadow-cyan-500/10' 
-                            : 'bg-slate-950 border-white/5 text-slate-500 hover:text-white'
+                            : method.disabled 
+                              ? 'bg-slate-900 border-white/5 text-slate-700 cursor-not-allowed opacity-50'
+                              : 'bg-slate-950 border-white/5 text-slate-500 hover:text-white'
                           }`}
                         >
                           <method.icon className="w-5 h-5" />
-                          <span className="text-[9px] font-black uppercase tracking-tighter">{method.label}</span>
+                          <span className="text-[9px] font-black uppercase tracking-tighter text-center leading-tight">{method.label}</span>
                         </button>
                       ))}
                    </div>
