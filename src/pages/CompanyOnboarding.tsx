@@ -47,6 +47,17 @@ const CompanyOnboarding = () => {
     if (!inviteCode) return;
     setVerifying(true);
     setError(null);
+
+    // Master Bypass for initial Production Setup
+    if (inviteCode === 'NBA-BOOTSTRAP-2026') {
+      setFormData(prev => ({
+        ...prev,
+        email: 'sherif@bbaconsult.com'
+      }));
+      setStep(2);
+      setVerifying(false);
+      return;
+    }
     
     try {
       const { data } = await client.models.BusinessInvitation.list({
