@@ -3,7 +3,7 @@ import { generateClient } from 'aws-amplify/api';
 import type { Schema } from '../../amplify/data/resource';
 import { 
   Plus, Copy,
-  Calendar, Mail, ExternalLink,
+  Calendar, Mail,
   MessageSquare,
   Hash, Info, Check, Send
 } from 'lucide-react';

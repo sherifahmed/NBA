@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
-  Building2, Wallet, 
+  Building2, 
   ArrowRight, ShieldCheck, 
-  Mail, Globe, AtSign, Loader2,
-  AlertCircle, Phone, Info, MessageSquare,
+  Mail, Loader2,
+  AlertCircle, Phone, MessageSquare,
   CheckCircle2
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -30,6 +30,7 @@ const CompanyOnboarding = () => {
   const [inviteCode, setInviteCode] = useState(code || '');
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmationCode, setConfirmationCode] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -133,6 +134,24 @@ const CompanyOnboarding = () => {
     }
   };
 
+  const handleConfirm = async () => {
+    if (confirmationCode.length !== 6) return;
+    setVerifying(true);
+    setError(null);
+    try {
+      await confirmSignUp({
+        username: formData.email,
+        confirmationCode: confirmationCode
+      });
+      navigate('/');
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Verification failed.');
+    } finally {
+      setVerifying(false);
+    }
+  };
+
   const passRules = {
     length: formData.password.length >= 8,
     upper: /[A-Z]/.test(formData.password),
@@ -141,13 +160,6 @@ const CompanyOnboarding = () => {
     symbol: /[^A-Za-z0-9]/.test(formData.password),
     match: formData.password === formData.confirmPassword && formData.password.length > 0
   };
-
-  const currencies = [
-    { code: 'INR', label: 'Indian Rupee (₹)', symbol: '₹' },
-    { code: 'USD', label: 'US Dollar ($)', symbol: '$' },
-    { code: 'GBP', label: 'British Pound (£)', symbol: '£' },
-    { code: 'EUR', label: 'Euro (€)', symbol: '€' }
-  ];
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6 font-sans">

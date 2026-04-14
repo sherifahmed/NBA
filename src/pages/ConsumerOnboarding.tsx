@@ -95,7 +95,7 @@ const ConsumerOnboarding = () => {
 
               {/* Placeholder Pet Form */}
               <div className="space-y-8">
-                {formData.pets.map((pet, i) => (
+                {formData.pets.map((_, i) => (
                   <div key={i} className="p-6 bg-slate-950/50 border border-white/5 rounded-[24px] space-y-4">
                      <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Pet #{i+1}</p>
                      <div className="space-y-2">

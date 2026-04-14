@@ -13,7 +13,6 @@ import {
   LogIn,
   LogOut,
   ShieldAlert,
-  CheckCircle2,
   ExternalLink
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

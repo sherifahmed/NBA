@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { 
-  ArrowLeft, Send, CheckCircle2, 
-  MessageSquare, Copy, ExternalLink,
+  ArrowLeft, Send, 
+  MessageSquare, Copy,
   Bold, Italic, List, Link as LinkIcon, 
   Smile, Phone as PhoneIcon, User,
   MoreVertical

@@ -1,8 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import SecurityCenter from '../SecurityCenter';
 import { MemoryRouter } from 'react-router-dom';
-import { generateClient } from 'aws-amplify/api';
+
 
 // Mock Amplify
 vi.mock('aws-amplify/api', () => ({
