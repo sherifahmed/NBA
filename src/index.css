@@ -77,53 +77,53 @@
 }
 
 .amplify-authenticator {
-  @apply min-h-screen flex items-center justify-center p-4 bg-transparent !important;
+  @apply min-h-screen flex items-center justify-center p-4 !bg-transparent;
 }
 
 .amplify-card {
-  @apply premium-glass border-white/10 !important;
+  @apply !premium-glass !border-white/10;
   background-color: rgba(15, 23, 42, 0.6) !important;
   backdrop-filter: blur(32px) !important;
   padding: 3rem 2rem !important;
 }
 
 .amplify-tabs {
-  @apply border-none mb-8 !important;
+  @apply !border-none mb-8;
 }
 
 .amplify-tabs__item {
-  @apply text-slate-500 font-black uppercase tracking-widest text-[10px] border-b-2 border-transparent transition-all !important;
+  @apply !text-slate-500 !font-black !uppercase !tracking-widest !text-[10px] !border-b-2 !border-transparent !transition-all;
 }
 
 .amplify-tabs__item--active {
-  @apply text-cyan-400 border-cyan-400 border-b-2 !important;
+  @apply !text-cyan-400 !border-cyan-400 !border-b-2;
 }
 
 .amplify-label {
-  @apply text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block !important;
+  @apply !text-[10px] !font-black !text-slate-500 !uppercase !tracking-widest !mb-2 !block;
 }
 
 .amplify-input {
-  @apply bg-slate-950 border-white/5 text-white rounded-xl py-3 px-4 font-bold outline-none transition-all !important;
+  @apply !bg-slate-950 !border-white/5 !text-white !rounded-xl !py-3 !px-4 !font-bold !outline-none !transition-all;
 }
 
 .amplify-input:focus {
-  @apply border-cyan-500/50 ring-4 ring-cyan-500/10 !important;
+  @apply !border-cyan-500/50 !ring-4 !ring-cyan-500/10;
 }
 
 .amplify-button[data-variation="primary"] {
-  @apply bg-cyan-500 text-slate-950 font-black uppercase tracking-widest py-4 rounded-xl shadow-xl shadow-cyan-500/20 hover:bg-cyan-400 active:scale-[0.98] transition-all border-none mt-4 !important;
+  @apply !bg-cyan-500 !text-slate-950 !font-black !uppercase !tracking-widest !py-4 !rounded-xl !shadow-xl !shadow-cyan-500/20 !hover:bg-cyan-400 !active:scale-[0.98] !transition-all !border-none !mt-4;
 }
 
 .amplify-button[data-variation="link"] {
-  @apply text-slate-500 font-bold hover:text-white transition-colors !important;
+  @apply !text-slate-500 !font-bold !hover:text-white !transition-colors;
 }
 
 .amplify-heading {
-  @apply text-white font-black italic tracking-tight text-2xl mb-1 !important;
+  @apply !text-white !font-black !italic !tracking-tight !text-2xl !mb-1;
 }
 
 .amplify-text {
-  @apply text-slate-400 text-sm font-medium !important;
+  @apply !text-slate-400 !text-sm !font-medium;
 }
 
