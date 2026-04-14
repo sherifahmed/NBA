@@ -225,14 +225,20 @@ const App = () => {
                 components={{
                   Header() {
                     return (
-                      <div className="text-center mb-8">
-                        <div className="inline-flex flex-col items-center gap-4">
-                          <img src="/NBA-Icon.png" alt="NBA Logo" className="w-16 h-16 rounded-2xl shadow-2xl" />
-                          <div>
-                            <h1 className="text-3xl font-black text-white tracking-tighter">NBA OS</h1>
-                            <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Business Operating System</p>
-                          </div>
+                      <div className="flex flex-col items-center py-12">
+                        <div className="flex items-center gap-6 mb-8">
+                           {/* BBA Logo Badge */}
+                           <div className="w-16 h-16 rounded-full bg-slate-100 p-1 flex items-center justify-center shadow-2xl border-4 border-cyan-500/20">
+                             <img src="/NBA-Icon.png" alt="BBA Logo" className="w-full h-full object-contain rounded-full" />
+                           </div>
+                           <div className="h-12 w-px bg-white/10" />
+                           {/* NBA Typography */}
+                           <div className="flex flex-col">
+                             <h1 className="text-5xl font-black text-white italic tracking-tighter leading-none">NBA <span className="text-cyan-400">OS</span></h1>
+                             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-2">Business Operating System</span>
+                           </div>
                         </div>
+                        <div className="w-full max-w-[120px] h-1 bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent rounded-full mb-4" />
                       </div>
                     );
                   }
